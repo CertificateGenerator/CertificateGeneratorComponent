@@ -13,15 +13,17 @@ public class CertificateGenerator {
 
     private Generator generator;
     private String outputPath;
+    private String backgroundPath;
 
-    public CertificateGenerator(String outputPath) {
+    public CertificateGenerator(String outputPath, String backgroundPath) {
         this.outputPath = outputPath;
+        this.backgroundPath = backgroundPath;
         generator = new Generator();
     }
 
     public void generateCertificatesFromList(List<Participante> participants) {
         for (Participante participant : participants) {
-            generator.createDocument(participant, outputPath);
+            generator.createDocument(participant, outputPath, backgroundPath);
         }
     }
 
@@ -32,7 +34,7 @@ public class CertificateGenerator {
                 String name = row.getCell(0).getStringCellValue();
                 String email = row.getCell(1).getStringCellValue();
                 Participante participant = new Participante(name, email, "Event", 10);
-                generator.createDocument(participant, outputPath);
+                generator.createDocument(participant, outputPath, backgroundPath);
             }
         } catch (IOException | InvalidFormatException e) {
             e.printStackTrace();

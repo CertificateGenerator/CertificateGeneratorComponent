@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 public class Generator {
 
-	 public Participante createDocument(Participante participante, String outputPath) {
+	 public Participante createDocument(Participante participante, String outputPath, String backgroundPath) {
         String fileName = outputPath + File.separator + participante.getNome() + "_" + participante.getNomeEvento() + ".pdf";
         File file = new File(fileName);
         if (!file.exists()) {
@@ -28,7 +28,7 @@ public class Generator {
                 PDDocument document = new PDDocument();
                 PDPage page = new PDPage();
                 document.addPage(page);
-                customizeCertificate(document, page, participante);
+                customizeCertificate(document, page, participante, backgroundPath);
                 document.save(fileName);
                 document.close();
                 participante.setCertificado(file);
@@ -43,7 +43,7 @@ public class Generator {
         return participante;
     }
     
-	private void customizeCertificate(PDDocument document, PDPage page, Participante participante) throws IOException {
+	private void customizeCertificate(PDDocument document, PDPage page, Participante participante, String backgroundPath) throws IOException {
 
 		float POINTS_PER_MM = 1 / (10 * 2.54f) * 72;
 		
@@ -56,13 +56,8 @@ public class Generator {
 		PDPageContentStream contentStream = new PDPageContentStream(document,page);
 		BufferedImage image = null;
 		String eventName = participante.getNomeEvento();
-		if(eventName.toLowerCase().contains("seminario") || eventName.toLowerCase().contains("seminário")) 
-            image = ImageIO.read(new File("src/main/resources/seminario_background.jpg"));
-        else if (eventName.toLowerCase().contains("workshop")) 
-            image = ImageIO.read(new File("src/main/resources/workshop_background.jpg"));
-        else 
-            image = ImageIO.read(new File("src/main/resources/default_background.jpg"));
-		
+		image = ImageIO.read(new File(backgroundPath));
+
 		float width = page.getMediaBox().getWidth(), height = page.getMediaBox().getHeight();
 		
 		File tempFile = File.createTempFile("temp", ".jpg");
