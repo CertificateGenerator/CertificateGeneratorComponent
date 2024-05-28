@@ -79,8 +79,6 @@ public class Generator {
 		}
 	}
 
-        // Titulo do certificado
-
     /**
      * Customizes the certificate document for the participant.
      *
