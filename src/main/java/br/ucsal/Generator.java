@@ -17,10 +17,19 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
-
+/**
+ * This class handles the creation of certificate documents.
+ */
 public class Generator {
 
-	 public Participante createDocument(Participante participante, String outputPath) {
+    /**
+     * Creates a document (certificate) for a participant.
+     *
+     * @param participante the participant
+     * @param outputPath the path where the certificate will be saved
+     * @return the participant with the certificate file set
+     */
+    public Participante createDocument(Participante participante, String outputPath) {
         String fileName = outputPath + File.separator + participante.getNome() + "_" + participante.getNomeEvento() + ".pdf";
         File file = new File(fileName);
         if (!file.exists()) {
@@ -42,39 +51,42 @@ public class Generator {
         }
         return participante;
     }
-    
-	private void customizeCertificate(PDDocument document, PDPage page, Participante participante) throws IOException {
 
-		float POINTS_PER_MM = 1 / (10 * 2.54f) * 72;
-		
-		PDRectangle pageSize = new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM);
-		page.setMediaBox(pageSize);
-		page.setRotation(0);
-		
-		// Tipos de certificado
-		
-		PDPageContentStream contentStream = new PDPageContentStream(document,page);
-		BufferedImage image = null;
-		String eventName = participante.getNomeEvento();
-		if(eventName.toLowerCase().contains("seminario") || eventName.toLowerCase().contains("seminário")) 
+    /**
+     * Customizes the certificate document for the participant.
+     *
+     * @param document the PDF document
+     * @param page the PDF page
+     * @param participante the participant
+     * @throws IOException if an error occurs during customization
+     */
+    private void customizeCertificate(PDDocument document, PDPage page, Participante participante) throws IOException {
+        float POINTS_PER_MM = 1 / (10 * 2.54f) * 72;
+        
+        PDRectangle pageSize = new PDRectangle(297 * POINTS_PER_MM, 210 * POINTS_PER_MM);
+        page.setMediaBox(pageSize);
+        page.setRotation(0);
+        
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        BufferedImage image = null;
+        String eventName = participante.getNomeEvento();
+        if (eventName.toLowerCase().contains("seminario") || eventName.toLowerCase().contains("seminário")) 
             image = ImageIO.read(new File("src/main/resources/seminario_background.jpg"));
         else if (eventName.toLowerCase().contains("workshop")) 
             image = ImageIO.read(new File("src/main/resources/workshop_background.jpg"));
         else 
             image = ImageIO.read(new File("src/main/resources/default_background.jpg"));
-		
-		float width = page.getMediaBox().getWidth(), height = page.getMediaBox().getHeight();
-		
-		File tempFile = File.createTempFile("temp", ".jpg");
-		try {
-		    ImageIO.write(image, "jpg", tempFile);
-		    contentStream.drawImage(PDImageXObject.createFromFileByContent(tempFile, document), 0, 0, width, height);
-		} finally {
-		    tempFile.delete();
-		}
-
-        // Titulo do certificado
         
+        float width = page.getMediaBox().getWidth(), height = page.getMediaBox().getHeight();
+        
+        File tempFile = File.createTempFile("temp", ".jpg");
+        try {
+            ImageIO.write(image, "jpg", tempFile);
+            contentStream.drawImage(PDImageXObject.createFromFileByContent(tempFile, document), 0, 0, width, height);
+        } finally {
+            tempFile.delete();
+        }
+
         float textWidth = 36 * 0.5f * (new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD).getStringWidth("CERTIFICADO") / 1000);
         float textHeight = 150;
         float textX = (width - textWidth) / 2 - (textWidth / 2);
@@ -86,9 +98,7 @@ public class Generator {
         contentStream.newLineAtOffset(textX, textY);
         contentStream.showText("CERTIFICADO");
         contentStream.endText();
-        
-        // Controle do texto no certificado.
-        
+
         String paragraph = "Certificamos que "+ participante.getNome().toUpperCase()+" participou do evento "+participante.getNomeEvento()+" com carga horária de "+ participante.getCargaHorariaEvento()+"h de participação.";
         float maxParagraphHeight = height - textHeight - 50; 
         float lineHeight = 30; 
@@ -130,7 +140,5 @@ public class Generator {
 
         contentStream.endText();
         contentStream.close();
-		
-	}
-
+    }
 }
