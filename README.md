@@ -22,10 +22,6 @@ O componente consiste nas seguintes classes:
 - **Design do Certificado Personalizável**: Os certificados são personalizados com base no tipo de evento, com imagens de fundo e formatação de texto diferentes.
 
 - **Suporte à Concorrência**: Utiliza multithreading para melhorar o desempenho ao processar informações dos participantes a partir de arquivos Excel.
-  
-- **Gerar Certificados a partir de um Arquivo Excel**: Chame o método generateCertificatesFromFile, passando o arquivo Excel contendo as informações dos participantes.
-
-- **Personalizar o Design do Certificado**: Modifique o método customizeCertificate na classe Generator para ajustar o design do certificado de acordo com suas necessidades.
 
 ## 🔍 Como Usar
 
